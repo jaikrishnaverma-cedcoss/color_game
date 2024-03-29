@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+      integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+      crossorigin="anonymous"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <div class="d-flex justify-content-center w-100 mt-5">
+        <h2 class="bg-secondary text-warning p-2 rounded" id="timer">00:00</h2>
+      </div>
+      <div
+        id="bet-buttons"
+        class="d-flex justify-content-center align-items-center-flex-wrap mt-5"
+        style="gap: 30px"
+      ></div>
+
+      <h2 class="mt-5">Winners</h2>
+      <table class="table mt-2">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">First</th>
+            <th scope="col">Last</th>
+            <th scope="col">Handle</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row">1</th>
+            <td>Mark</td>
+            <td>Otto</td>
+            <td>@mdo</td>
+          </tr>
+      
+        </tbody>
+      </table>
+    </div>
+  </body>
+  <script>
+    let bets = [];
+    const winners = [];
+    let timerRef = null;
+    const betOptions = [
+      {
+        isSingle: true,
+        label: 1,
+        value: 1,
+        return_percentage: 1.8,
+      },
+      {
+        isSingle: true,
+        label: 2,
+        value: 2,
+        return_percentage: 1.8,
+      },
+      {
+        isSingle: true,
+        label: 3,
+        value: 3,
+        return_percentage: 1.8,
+      },
+      {
+        isSingle: true,
+        label: 4,
+        value: 4,
+        return_percentage: 1.8,
+      },
+      {
+        isSingle: true,
+        label: 5,
+        value: 5,
+        return_percentage: 1.8,
+      },
+      {
+        isSingle: true,
+        label: 6,
+        value: 6,
+        return_percentage: 1.8,
+      },
+      {
+        isSingle: true,
+        label: 7,
+        value: 7,
+        return_percentage: 1.8,
+      },
+      {
+        isSingle: true,
+        label: 8,
+        value: 8,
+        return_percentage: 1.8,
+      },
+      {
+        isSingle: true,
+        label: 9,
+        value: 9,
+        return_percentage: 1.8,
+      },
+      {
+        isSingle: false,
+        label: "Blue",
+        value: [1, 8, 9, 3, 4, 7],
+        return_percentage: 1.25,
+        class: "btn-primary",
+      },
+      {
+        isSingle: false,
+        label: "Yellow",
+        value: [2, 5, 3, 6],
+        return_percentage: 1.5,
+        class: "btn-warning",
+      },
+      {
+        isSingle: false,
+        label: "Red",
+        value: [9, 7, 4],
+        return_percentage: 1.75,
+        class: "btn-danger",
+      },
+    ];
+
+    function randomNumber(min = 1, max = 9) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+    /**
+     * populate buttons
+     * */
+    function populate() {
+      const betElement = document.getElementById("bet-buttons");
+      betElement.innerHTML = betOptions
+        .map(
+          (bet, index) =>
+            `<button
+            class="btn ${bet?.class ?? "btn-info"}"
+            key='${index}'
+            onclick="addBet(${index})"
+            >${bet.label}</button>`
+        )
+        .join(" ");
+    }
+
+    function addBet(index) {
+      const bet = betOptions[index];
+      let person = prompt("Enter username?");
+      let betAmount = prompt("Enter amount?");
+      const userIndex = bets.findIndex((el) => el.userName == person);
+      if (!bet || !person || !betAmount)
+        return alert("some filled or value is missing or incorrect.");
+      if (userIndex == -1) {
+        bets.push({ userName: person, amount: betAmount, betRule: bet });
+      } else {
+        alert("This user already done bet. Only one allowed to one person.");
+      }
+      console.log({ bets });
+    }
+    function disableAll() {
+      const parentElement = document.getElementById("bet-buttons");
+      var children = parentElement.children;
+      for (var i = 0; i < children.length; i++) {
+        if (children[i].tagName === "BUTTON") {
+          children[i].disabled = true;
+        }
+      }
+    }
+    function calculateWinner() {
+      // { userName: person, amount: betAmount, betRule: bet }
+      const notes = {};
+      bets.forEach((el) => {
+        const {
+          betRule: { label, return_percentage },
+          amount,
+        } = el;
+        if (notes?.[label]) {
+          notes[label].bet += amount;
+          notes[label].cost += amount*return_percentage;
+          notes[label]['winners']=[...notes[label]['winners'],el]
+        } else {
+          notes[label] = {};
+          notes[label].bet = amount;
+          notes[label].cost =  amount*return_percentage;
+        }
+      });
+
+      const arr=Object.entries(notes)
+      arr.sort((a,b)=>{
+        return b[1] - a[1];
+      })
+    const winner_bet = betOptions.find(el=>el.label==arr[0][1])
+    if(winner_bet){
+      winners.push({
+       ...winner_bet,
+       total_bets:bets,
+       logs:notes,
+      })
+    }
+      else
+      alert('winner_bet empty.')
+
+      bets=[];
+      populate();
+    }
+
+    function startTimer(duration, display) {
+      var timer = duration,
+        minutes,
+        seconds;
+      timerRef = setInterval(function () {
+        minutes = parseInt(timer / 60, 10);
+        seconds = parseInt(timer % 60, 10);
+
+        minutes = minutes < 10 ? "0" + minutes : minutes;
+        seconds = seconds < 10 ? "0" + seconds : seconds;
+
+        display.textContent = minutes + ":" + seconds;
+        if (minutes + ":" + seconds == "00:30") {
+          disableAll();
+        }
+        if (--timer < 0) {
+          timer = duration;
+          calculateWinner();
+        }
+      }, 1000);
+    }
+
+    window.addEventListener("load", function () {
+      populate();
+      var threeMinutes = 60 * 3,
+        display = document.querySelector("#timer");
+      startTimer(threeMinutes, display);
+    });
+  </script>
+</html>

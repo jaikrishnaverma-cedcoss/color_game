@@ -29,12 +29,9 @@
             <th scope="col">ID</th>
             <th scope="col">Winner</th>
             <th scope="col">Winner Numbers</th>
-            <th scope="col">Handle</th>
           </tr>
         </thead>
-        <tbody id="winner-tbody">
-      
-        </tbody>
+        <tbody id="winner-tbody"></tbody>
       </table>
     </div>
   </body>
@@ -146,9 +143,11 @@
         .map(
           (bet, index) =>
             `<tr>
-                <td>${index+1}</td>
+                <td>${index + 1}</td>
                 <td>${bet.label}</td>
-                <td>${Array.isArray(bet.value)?bet.value.join():bet.value}</td>
+                <td>${
+                  Array.isArray(bet.value) ? bet.value.join() : bet.value
+                }</td>
                 </tr>`
         )
         .join(" ");
@@ -187,31 +186,31 @@
         } = el;
         if (notes?.[label]) {
           notes[label].bet += amount;
-          notes[label].cost += amount*return_percentage;
-          notes[label]['winners']=[...notes[label]['winners'],el]
+          notes[label].cost += amount * return_percentage;
+          notes[label]["winners"] = [...notes[label]["winners"], el];
         } else {
           notes[label] = {};
           notes[label].bet = amount;
-          notes[label].cost =  amount*return_percentage;
+          notes[label].cost = amount * return_percentage;
+          notes[label]["winners"] = [el];
         }
       });
 
-      const arr=Object.entries(notes)
-      arr.sort((a,b)=>{
+      const arr = Object.entries(notes);
+      arr.sort((a, b) => {
         return b[1] - a[1];
-      })
-    const winner_bet = betOptions.find(el=>el.label==arr[0][1])
-    if(winner_bet){
-      winners.push({
-       ...winner_bet,
-       total_bets:bets,
-       logs:notes,
-      })
-    }
-      else
-      alert('winner_bet empty.')
+      });
+      console.log(arr)
+      const winner_bet = betOptions.find((el) => el.label == arr[0][1]);
+      if (winner_bet) {
+        winners.push({
+          ...winner_bet,
+          total_bets: bets,
+          logs: notes,
+        });
+      } else alert("winner_bet empty.");
 
-      bets=[];
+      bets = [];
       populate();
       populateTable();
     }
@@ -244,5 +243,6 @@
         display = document.querySelector("#timer");
       startTimer(threeMinutes, display);
     });
+  
   </script>
 </html>

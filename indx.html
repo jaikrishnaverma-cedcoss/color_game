@@ -26,19 +26,13 @@
       <table class="table mt-2">
         <thead>
           <tr>
-            <th scope="col">#</th>
-            <th scope="col">First</th>
-            <th scope="col">Last</th>
+            <th scope="col">ID</th>
+            <th scope="col">Winner</th>
+            <th scope="col">Winner Numbers</th>
             <th scope="col">Handle</th>
           </tr>
         </thead>
-        <tbody>
-          <tr>
-            <th scope="row">1</th>
-            <td>Mark</td>
-            <td>Otto</td>
-            <td>@mdo</td>
-          </tr>
+        <tbody id="winner-tbody">
       
         </tbody>
       </table>
@@ -146,6 +140,20 @@
         .join(" ");
     }
 
+    function populateTable() {
+      const betElement = document.getElementById("winner-tbody");
+      betElement.innerHTML = winners
+        .map(
+          (bet, index) =>
+            `<tr>
+                <td>${index+1}</td>
+                <td>${bet.label}</td>
+                <td>${Array.isArray(bet.value)?bet.value.join():bet.value}</td>
+                </tr>`
+        )
+        .join(" ");
+    }
+
     function addBet(index) {
       const bet = betOptions[index];
       let person = prompt("Enter username?");
@@ -205,6 +213,7 @@
 
       bets=[];
       populate();
+      populateTable();
     }
 
     function startTimer(duration, display) {
